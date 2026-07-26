@@ -1,0 +1,299 @@
+{
+  "info": {
+    "_postman_id": "hkhousub-0001-0001-0001-000000000001",
+    "name": "hkhousub 청약 API",
+    "description": "아파트 청약 서비스 REST API. base_url 변수만 맞추면 바로 실행됩니다.\n\n- 개별 엔드포인트: CRUD 참고용\n- 시나리오: 커트라인: 단지→아파트(공급3)→회원5→청약4→커트라인(=62) 자동 검증. Postman Runner 또는 newman으로 위에서부터 순서대로 실행하세요.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://127.0.0.1:8000/api" },
+    { "key": "complex_id", "value": "" },
+    { "key": "apartment_id", "value": "" },
+    { "key": "member_1", "value": "" },
+    { "key": "member_2", "value": "" },
+    { "key": "member_3", "value": "" },
+    { "key": "member_4", "value": "" },
+    { "key": "member_5", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "01. 시나리오: 커트라인 (순서대로 실행)",
+      "item": [
+        {
+          "name": "1) 단지 생성",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('201 Created', () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set('complex_id', pm.response.json().id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"래미안 강남\",\n  \"region\": \"서울 강남구\"\n}" },
+            "url": { "raw": "{{base_url}}/complexes/", "host": ["{{base_url}}"], "path": ["complexes", ""] }
+          }
+        },
+        {
+          "name": "2) 아파트 생성 (84A, 공급 3세대)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('201 Created', () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set('apartment_id', pm.response.json().id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"complex\": \"{{complex_id}}\",\n  \"name\": \"84A\",\n  \"area\": 84.97,\n  \"supply_count\": 3,\n  \"price\": 1200000000\n}" },
+            "url": { "raw": "{{base_url}}/apartments/", "host": ["{{base_url}}"], "path": ["apartments", ""] }
+          }
+        },
+        {
+          "name": "3) 회원 생성 (김철수 70)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('201 Created', () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set('member_1', pm.response.json().id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"김철수\",\n  \"score\": 70\n}" },
+            "url": { "raw": "{{base_url}}/members/", "host": ["{{base_url}}"], "path": ["members", ""] }
+          }
+        },
+        {
+          "name": "4) 회원 생성 (이영희 65)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('201 Created', () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set('member_2', pm.response.json().id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"이영희\",\n  \"score\": 65\n}" },
+            "url": { "raw": "{{base_url}}/members/", "host": ["{{base_url}}"], "path": ["members", ""] }
+          }
+        },
+        {
+          "name": "5) 회원 생성 (박민수 62)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('201 Created', () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set('member_3', pm.response.json().id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"박민수\",\n  \"score\": 62\n}" },
+            "url": { "raw": "{{base_url}}/members/", "host": ["{{base_url}}"], "path": ["members", ""] }
+          }
+        },
+        {
+          "name": "6) 회원 생성 (최지우 55)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('201 Created', () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set('member_4', pm.response.json().id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"최지우\",\n  \"score\": 55\n}" },
+            "url": { "raw": "{{base_url}}/members/", "host": ["{{base_url}}"], "path": ["members", ""] }
+          }
+        },
+        {
+          "name": "7) 회원 생성 (정해인 40, 낙첨 예정)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('201 Created', () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set('member_5', pm.response.json().id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"정해인\",\n  \"score\": 40\n}" },
+            "url": { "raw": "{{base_url}}/members/", "host": ["{{base_url}}"], "path": ["members", ""] }
+          }
+        },
+        {
+          "name": "8) 청약 - 김철수(70)",
+          "event": [
+            { "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('201 Created', () => pm.response.to.have.status(201));", "pm.test('score 스냅샷 70', () => pm.expect(pm.response.json().score).to.eql(70));"] } }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"apartment\": \"{{apartment_id}}\",\n  \"member\": \"{{member_1}}\"\n}" },
+            "url": { "raw": "{{base_url}}/applications/", "host": ["{{base_url}}"], "path": ["applications", ""] }
+          }
+        },
+        {
+          "name": "9) 청약 - 이영희(65)",
+          "event": [
+            { "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('201 Created', () => pm.response.to.have.status(201));"] } }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"apartment\": \"{{apartment_id}}\",\n  \"member\": \"{{member_2}}\"\n}" },
+            "url": { "raw": "{{base_url}}/applications/", "host": ["{{base_url}}"], "path": ["applications", ""] }
+          }
+        },
+        {
+          "name": "10) 청약 - 박민수(62, 커트라인)",
+          "event": [
+            { "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('201 Created', () => pm.response.to.have.status(201));"] } }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"apartment\": \"{{apartment_id}}\",\n  \"member\": \"{{member_3}}\"\n}" },
+            "url": { "raw": "{{base_url}}/applications/", "host": ["{{base_url}}"], "path": ["applications", ""] }
+          }
+        },
+        {
+          "name": "11) 청약 - 최지우(55, 낙첨)",
+          "event": [
+            { "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('201 Created', () => pm.response.to.have.status(201));"] } }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"apartment\": \"{{apartment_id}}\",\n  \"member\": \"{{member_4}}\"\n}" },
+            "url": { "raw": "{{base_url}}/applications/", "host": ["{{base_url}}"], "path": ["applications", ""] }
+          }
+        },
+        {
+          "name": "12) 청약 - 김철수 중복 (400 기대)",
+          "event": [
+            { "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('중복 청약은 400', () => pm.response.to.have.status(400));"] } }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"apartment\": \"{{apartment_id}}\",\n  \"member\": \"{{member_1}}\"\n}" },
+            "url": { "raw": "{{base_url}}/applications/", "host": ["{{base_url}}"], "path": ["applications", ""] }
+          }
+        },
+        {
+          "name": "13) 커트라인 조회 (=62 검증)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const j = pm.response.json();",
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('상태 마감', () => pm.expect(j.status).to.eql('마감'));",
+                  "pm.test('커트라인 62', () => pm.expect(j.cutline_score).to.eql(62));",
+                  "pm.test('지원자 4명', () => pm.expect(j.application_count).to.eql(4));",
+                  "pm.test('경쟁률 1.33', () => pm.expect(j.competition_rate).to.eql(1.33));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/apartments/{{apartment_id}}/cutline/", "host": ["{{base_url}}"], "path": ["apartments", "{{apartment_id}}", "cutline", ""] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "02. 개별 엔드포인트 (참고)",
+      "item": [
+        {
+          "name": "회원 목록 GET",
+          "request": { "method": "GET", "header": [], "url": { "raw": "{{base_url}}/members/", "host": ["{{base_url}}"], "path": ["members", ""] } }
+        },
+        {
+          "name": "회원 생성 POST",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"홍길동\",\n  \"score\": 60\n}" },
+            "url": { "raw": "{{base_url}}/members/", "host": ["{{base_url}}"], "path": ["members", ""] }
+          }
+        },
+        {
+          "name": "단지 목록 GET (아파트 중첩)",
+          "request": { "method": "GET", "header": [], "url": { "raw": "{{base_url}}/complexes/", "host": ["{{base_url}}"], "path": ["complexes", ""] } }
+        },
+        {
+          "name": "아파트 목록 GET",
+          "request": { "method": "GET", "header": [], "url": { "raw": "{{base_url}}/apartments/", "host": ["{{base_url}}"], "path": ["apartments", ""] } }
+        },
+        {
+          "name": "아파트 커트라인 GET",
+          "request": { "method": "GET", "header": [], "url": { "raw": "{{base_url}}/apartments/{{apartment_id}}/cutline/", "host": ["{{base_url}}"], "path": ["apartments", "{{apartment_id}}", "cutline", ""] } }
+        },
+        {
+          "name": "청약 목록 GET",
+          "request": { "method": "GET", "header": [], "url": { "raw": "{{base_url}}/applications/", "host": ["{{base_url}}"], "path": ["applications", ""] } }
+        },
+        {
+          "name": "청약 생성 POST",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"apartment\": \"{{apartment_id}}\",\n  \"member\": \"{{member_1}}\"\n}" },
+            "url": { "raw": "{{base_url}}/applications/", "host": ["{{base_url}}"], "path": ["applications", ""] }
+          }
+        }
+      ]
+    }
+  ]
+}

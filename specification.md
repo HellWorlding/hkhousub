@@ -281,17 +281,45 @@ Complex(단지) 1 ──< N Apartment(아파트/주택형) 1 ──< N Applicati
 
 ---
 
-## 7. MVP 범위 밖 (추후 확장)
+## 7. 성능 — N+1 쿼리 해결
+
+### 문제
+`GET /api/complexes/` (단지 목록)은 `ComplexSerializer`가 소속 아파트를 **중첩 직렬화**한다.
+queryset이 단순 `Complex.objects.all()`이면 단지마다 아파트 조회 쿼리가 따로 나가 **N+1 쿼리**가 발생.
+- 실측: 단지 4개 → **5쿼리** (`1(단지) + 4(단지별 아파트)`)
+
+### 해결
+`ComplexViewSet` queryset에 **`prefetch_related("apartments")`** 적용 → 아파트를 `IN` 쿼리 한 번으로 미리 로딩.
+- 실측: **5 → 2쿼리** (단지 수와 무관한 상수)
+
+```python
+queryset = Complex.objects.prefetch_related("apartments").order_by("-created_at")
+```
+
+### JPA 대응
+
+| Django | JPA | 관계 |
+|---|---|---|
+| `select_related` | `JOIN FETCH` | to-one (`@ManyToOne`) |
+| `prefetch_related` | `@BatchSize` | to-many (`@OneToMany`) |
+
+> Apartment/Application의 to-one FK(`complex`, `member`)는 이미 `select_related`로 처리됨.
+> Django는 컬렉션(to-many)에 대해선 행 뻥튀기·페이징 문제로 JOIN FETCH를 쓰지 않고 별도 IN 쿼리를 사용한다.
+
+---
+
+## 8. MVP 범위 밖 (추후 확장)
 
 - 회원 인증/로그인 (Django auth, JWT)
 - 청약 기간(오픈/마감 일시) 관리
 - 1순위/2순위, 지역 우선공급 등 실제 청약 규칙
 - 페이지네이션, 필터링, 정렬 쿼리 파라미터
 - 관리자 화면 커스터마이징
+- 자동화 테스트 (pytest / DRF APITestCase)
 
 ---
 
-## 8. 구현 순서 (체크리스트)
+## 9. 구현 순서 (체크리스트)
 
 - [x] 환경: venv + Django 6 + DRF + psycopg, 도커 Postgres, GitHub 연동
 - [x] 앱 분리: `common`/`members`/`apartments`/`applications` 생성 + `INSTALLED_APPS` 등록
@@ -299,8 +327,10 @@ Complex(단지) 1 ──< N Apartment(아파트/주택형) 1 ──< N Applicati
 - [x] 각 app `models.py` — Complex / Apartment / Member / Application
 - [x] `makemigrations` → `migrate` (Postgres에 테이블 생성)
 - [x] `admin.py` 등록 + `seed` 커맨드로 샘플 데이터 주입
-- [ ] `serializers.py` — 각 도메인 + Cutline 응답용
-- [ ] `services.py` — 커트라인/청약 비즈니스 로직
-- [ ] `views.py` — ViewSet + `cutline` 커스텀 액션
-- [ ] `urls.py` — DRF Router 등록, `config/urls.py`에 include
-- [ ] API 테스트 (커트라인/청약 시나리오 검증)
+- [x] `serializers.py` — 각 도메인 + Cutline 응답용
+- [x] `services.py` — 커트라인/청약 비즈니스 로직
+- [x] `views.py` — ViewSet + `cutline` 커스텀 액션
+- [x] `urls.py` — DRF Router 등록, `config/urls.py`에 include
+- [x] 성능: 단지 목록 N+1 쿼리 해결 (`prefetch_related`)
+- [x] API 테스트 — Postman 컬렉션 + newman 시나리오 검증
+- [x] README 작성 (실행법·API·ERD·N+1)
