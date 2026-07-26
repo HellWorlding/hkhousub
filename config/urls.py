@@ -16,8 +16,12 @@ Including another URLconf
 """
 
 from django.contrib import admin
-from django.urls import path
+from django.urls import include, path
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    # 각 app의 라우터를 /api/ 밑으로 include (스프링의 모듈별 컨트롤러 매핑 통합).
+    path("api/", include("members.urls")),
+    path("api/", include("apartments.urls")),
+    path("api/", include("applications.urls")),
 ]

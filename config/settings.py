@@ -39,7 +39,11 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     # 3rd party
     "rest_framework",
-    # local apps (startapp 후 등록 예정: members, apartments, applications)
+    # local apps
+    "common",
+    "members",
+    "apartments",
+    "applications",
 ]
 
 MIDDLEWARE = [

@@ -67,6 +67,34 @@ DATABASES = {
 
 ---
 
+## 1.5 프로젝트 구조 (앱 분리)
+
+**3개 도메인 app + 1개 공용 app.** 사실상 커머스의 **User / Product+Company / Order** 구조와 동형이다.
+
+```
+config/          # 프로젝트 설정 (settings, urls) — 스프링 부트 메인
+manage.py
+common/          # 공용: BaseModel(UUID PK, created_at) = @MappedSuperclass, + seed 커맨드
+members/         # [app] Member        (= User)
+apartments/      # [app] Complex, Apartment  (= Company, Product)
+applications/    # [app] Application    (= Order)
+docker-compose.yml
+```
+
+| app | 모델 | 커머스 대응 |
+|---|---|---|
+| `common` | `BaseModel`(abstract) | 공통 상위 클래스 |
+| `members` | `Member` | User (고객) |
+| `apartments` | `Complex`, `Apartment` | Company, Product |
+| `applications` | `Application` | Order |
+
+- 각 app은 **flat 구조** (models/serializers/services/views/urls 파일). 서브패키지로 쪼개지 않음.
+- app 간 FK는 **문자열 참조**(`"apartments.Apartment"`)로 순환 import 방지.
+- 비즈니스 로직은 각 app의 **`services.py`**(= 스프링 `@Service`)에 둔다.
+- **일반 주문과 차이:** 배정이 선착순이 아니라 **가점 랭킹**으로 결정됨 → 커트라인 개념.
+
+---
+
 ## 2. 도메인 모델 (ERD)
 
 ```
@@ -265,11 +293,14 @@ Complex(단지) 1 ──< N Apartment(아파트/주택형) 1 ──< N Applicati
 
 ## 8. 구현 순서 (체크리스트)
 
-- [ ] `subscription` 앱 생성, `INSTALLED_APPS`에 `rest_framework` + `subscription` 등록
-- [ ] `models.py` — Complex / Apartment / Member / Application
-- [ ] `makemigrations` → `migrate`
-- [ ] `serializers.py` — 4개 도메인 + Cutline 응답용
-- [ ] `views.py` — ViewSet 4개 + `cutline` 커스텀 액션
+- [x] 환경: venv + Django 6 + DRF + psycopg, 도커 Postgres, GitHub 연동
+- [x] 앱 분리: `common`/`members`/`apartments`/`applications` 생성 + `INSTALLED_APPS` 등록
+- [x] `common/models.py` — `BaseModel`(UUID PK)
+- [x] 각 app `models.py` — Complex / Apartment / Member / Application
+- [x] `makemigrations` → `migrate` (Postgres에 테이블 생성)
+- [x] `admin.py` 등록 + `seed` 커맨드로 샘플 데이터 주입
+- [ ] `serializers.py` — 각 도메인 + Cutline 응답용
+- [ ] `services.py` — 커트라인/청약 비즈니스 로직
+- [ ] `views.py` — ViewSet + `cutline` 커스텀 액션
 - [ ] `urls.py` — DRF Router 등록, `config/urls.py`에 include
-- [ ] `admin.py` 등록 → 관리자 화면으로 시드 데이터 입력
 - [ ] API 테스트 (커트라인/청약 시나리오 검증)
