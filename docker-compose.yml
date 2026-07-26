@@ -1,0 +1,15 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: hkhousub-db
+    environment:
+      POSTGRES_DB: hkhousub
+      POSTGRES_USER: hkhousub
+      POSTGRES_PASSWORD: hkhousub
+    ports:
+      - "5432:5432"          # 호스트 5432 → 컨테이너 5432
+    volumes:
+      - hkhousub_pgdata:/var/lib/postgresql/data   # 데이터 영속화 (컨테이너 지워도 유지)
+
+volumes:
+  hkhousub_pgdata:
